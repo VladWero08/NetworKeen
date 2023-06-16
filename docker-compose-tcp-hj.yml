@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+    server:
+        build:
+            context: .
+            dockerfile: docker-tcp-hj/Dockerfile
+        ports:
+          - 10000:10000
+        privileged: true
+        tty: true
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW
+          - SYS_ADMIN
+        networks:
+            net2:
+              ipv4_address: 198.7.0.2
+        depends_on:
+          - "router"
+        command: sh -c "/server.sh && python3 /tcp_server.py && sleep infinity"
+   
+    middle:
+        build:
+            context: .
+            dockerfile: docker-tcp-hj/Dockerfile
+        tty: true
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW
+          - SYS_ADMIN
+        networks:
+            net2:
+              ipv4_address: 198.7.0.3
+        depends_on:
+            - "router"
+        sysctls:
+          - net.ipv4.ip_forward=1
+        command: sh -c "/middle.sh && python3 /main.py && sleep infinity"
+        
+    
+    middle2:
+        build:
+            context: .
+            dockerfile: docker-tcp-hj/Dockerfile
+        tty: true
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW
+          - SYS_ADMIN
+        networks:
+            net2:
+              ipv4_address: 198.7.0.4
+        depends_on:
+            - "router"
+        sysctls:
+          - net.ipv4.ip_forward=1
+        command: sh -c "python3 /main_ARP.py && sleep infinity"
+
+
+    router:
+        build:
+            context: .
+            dockerfile: docker-tcp-hj/Dockerfile
+        tty: true
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW
+          - SYS_ADMIN
+        networks:
+            net1:
+              ipv4_address: 172.7.0.1
+            net2:
+              ipv4_address: 198.7.0.1
+        sysctls:
+          - net.ipv4.ip_forward=1
+        command: sh -c "/router.sh && python3 /router_pingARP.py && /alter_packages.sh && sleep infinity" 
+
+    client:
+        build:
+            context: .
+            dockerfile: docker-tcp-hj/Dockerfile
+        tty: true
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW
+          - SYS_ADMIN
+        networks:
+            net1:
+              ipv4_address: 172.7.0.2
+        depends_on:
+          - "router"
+          - "server"
+        command: sh -c "/client.sh && python3 /tcp_client.py "Hello, server!" && sleep infinity"
+
+
+
+networks:
+    net1:
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.7.0.0/16
+                  gateway: 172.7.1.1
+    net2:
+        ipam:
+            driver: default
+            config:
+                - subnet: 198.7.0.0/16
+                  gateway: 198.7.1.1

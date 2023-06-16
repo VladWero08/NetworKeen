@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+    ex2_flask:
+        build:
+            context: .
+            dockerfile: docker-dns/Dockerfile
+        ports:
+          - "8001:8001"
+        tty: true
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW
+          - SYS_ADMIN
+        networks:
+            net2:
+              ipv4_address: 198.8.0.2
+        command: python /docker-dns/simple_flask.py
+        depends_on:
+            - "ex2_dns"
+
+    ex2_dns:
+        build:
+            context: .
+            dockerfile: docker-dns/Dockerfile
+        ports:
+          - "53:53/udp"
+        tty: true
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW
+          - SYS_ADMIN
+        networks:
+            net2:
+              ipv4_address: 198.8.0.3
+        command: python3 /src/dns-ad-blocker/main_DNS.py
+networks:
+    net1:
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.7.0.0/16
+                  gateway: 172.7.1.1
+    net2:
+        ipam:
+            driver: default
+            config:
+                - subnet: 198.8.0.0/16
+                  gateway: 198.8.1.1
