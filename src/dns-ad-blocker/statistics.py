@@ -1,4 +1,4 @@
-# fisierul in care se afla domeniile blocate
+# the file in which the blocked domains are
 filename = 'blacklists/blocked_domains.txt'  
 
 blocked_domains = []
@@ -9,14 +9,14 @@ with open(filename, 'r') as file:
             domain = line.strip().replace("Blocked: ", "")
             blocked_domains.append(domain)
 
-# cate contin "google" si "facebook"
+# how many of them contain 'google' and 'facebook'
 google_count = sum('google' in domain for domain in blocked_domains)
 facebook_count = sum('facebook' in domain for domain in blocked_domains)
 
 print(f"Numar domenii ce contin 'google': {google_count}")
 print(f"Numar domenii ce contin 'facebook': {facebook_count}")
 
-# frecventa, iau primul de dupa '.', adica domeniul
+# frequency dictionary
 blocked_companies = {}
 for domain in blocked_domains:
     company = domain.split('.')[1]
