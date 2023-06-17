@@ -1,80 +1,17 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/rNq2_QBS)
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-8d59dc4de5201274e310e4c54b9627a8934c3b88527886e3b421487c677d23eb.svg)](https://classroom.github.com/a/rNq2_QBS)
-# Proiect Rețele 2022-2023
+# NetworKeen
+Not only that this project is aimed to rebuild some networking utilities( traceroute, DNS ad blocker server) but also to simulate some cyber-attacks related to networking( ARP spoofing, TCP Hijacking). It is mostly built with the help of <a href="https://scapy.net/">scapy</a> and other API/Python libraries. 
+I have worked alongside my amigo <a href="https://github.com/Iradu15">Radu</a>. :) 
 
-## Sumar
+## 🗺️ Traceroute 
+Traceroute will send a UDP message with increasing values of TTL until the final destination is reached. For each IP encountered, pieces of information about its geographical location will be stored inside a dictionary and eventually displayed a map of countries encountered during the transmission of the message. Depending on the location where the code was executed, some routes as been saved inside _./src/traceroute-utilities/locations.txt_.
 
-Pentru proiect trebuie să rezolvați următoarele 
+## ✋ DNS ad blocked server 
+Using this <a href="https://github.com/anudeepND/blacklist">blacklist</a>, we have built a DNS adblocker server. Whenever one domain from the list is requested, the server will redirect the request to **'0.0.0.0 / ::**. Each blocked domain is stored in the file: _./src/dns-ad-blocker/blacklists/blocked_domains.txt_, and using that information a statistic can be generated to discover which domains were the most blocked.
 
-### 4 probleme:
-- [Traceroute (2.5p)](#trace)
-- [Server DNS Add Blocker (2.5p)](#dns)
-- [ARP Spoofing (2p)](#arp)
-- [TCP Hijacking (2p)](#tcp)
+The server runs on a **docker-compose orchestration**, on the container with the IP = **198.8.0.3**. 
 
-### Reguli:
-- echipe de maxim 3 persoane (muncă în echipă înseamnă că fiecare coleg poate explica munca celorlalți)
-- codul copiat de la alți colegi din alte echipe se punctează cu 0
-- echipele pot fi formate doar din colegi care sunt in aceeasi serie
-- orice cod preluat de pe internet trebuie citat (menționat la început de fișier) și înțeles întru totul
-- veți fi punctați pe baza întrebărilor pe care le primiți
-- întrebările nu vor tine cont de partea la care ati lucrat cel mai mult
-- proiectul trebuie să ruleze în timpul prezentării
-- **termen limită:** 12 iunie
-
-<a name="trace"></a> 
-## Traceroute (2.5p)
-Traceroute este o metodă prin care putem urmări prin ce noduri (routere) trece un pachet pentru a ajunge la destinație.
-În funcție de IP-urile acestor noduri, putem afla țările sau regiunile prin care trec pachetele.
-Înainte de a implementa tema, citiți explicația felului în care funcționează [traceroute prin UDP](https://www.slashroot.in/how-does-traceroute-work-and-examples-using-traceroute-command). Pe scurt, pentru fiecare mesaj UDP care este în tranzit către destinație, dar pentru care TTL (Time to Live) expiră, senderul primește de la router un mesaj [ICMP](https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Header) de tipul [Time Exceeded TTL expired in transit](https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Time_exceeded).
-
-1. Modificați fișierul `src/traceroute.py` și implementați o aplicație traceroute complet funcțională.
-1. Folosiți un API sau o bază de date care oferă informații despre locația IP-urilor (de ex. [ip-api](https://ip-api.com), [ip2loc](https://ip2loc.com), [ipinfo](https://ipinfo.io) etc.) și apelați-l pentru fiecare IP public pe care îl obțineți.
-1. Afișați locațiile din lume pentru rutele către mai multe site-uri din regiuni diferite: din Asia, Africa și Australia căutând site-uri cu extensia .cn, .za, .au. Folositi IP-urile acestora.
-1. Afișați: Orașul, Regiunea și Țara (acolo unde sunt disponibile) prin care trece mesajul vostru pentru a ajunge la destinație.
-1. Executați codul din mai multe locații: facultate, acasă, rețea publică și salvați toate rutele obținute într-un fișier pe care îl veți prezenta
-1. (opțional) Afișați țările pe o hartă folosind [geoplotting](https://geopandas.org/en/stable/gallery/plotting_with_geoplot.html)
-
-
-<a name="dns"></a> 
-## Server DNS Add Blocker (2.5p)
-În cadrul acestei teme, veți avea de implementat un blocker de reclame și tracking după modelul [pi-hole](https://pi-hole.net/).
-
-1. Citiți despre DNS în [secțiunea de curs](https://github.com/senisioi/computer-networks/tree/2023/capitolul2#dns).
-1. Scrieți codul unei aplicații de tip DNS server. Puteți urmări un tutorial [în Rust aici](https://github.com/EmilHernvall/dnsguide/tree/master) și puteți folosi ca punct de plecare [codul în python disponibil în capitolul 6](https://github.com/senisioi/computer-networks/tree/2023/capitolul6#scapy_dns).
-1. Utilizați o listă deja curatoriată de domenii asociate cu [reclame și tracking](https://github.com/anudeepND/blacklist) cu scopul de a bloca acele domenii. De fiecare dată când vine o cerere către serverul vostru pentru domenii din lista respectivă, serverul trebuie să [returneaze IP-ul](https://superuser.com/questions/1030329/better-to-block-a-host-to-0-0-0-0-than-to-127-0-0-1) `0.0.0.0`.
-1. Creați o orchestrație docker compose (pe modelul `simple_flask.py` făcut la curs) care să pornească codul vostru în python și să pornească serverul DNS pe localhost.
-1. Setați serverul să fie DNS-ul principal pentru calculatorul vostru:
-    - [Linux](https://www.linuxfordevices.com/tutorials/linux/change-dns-on-linux)
-    - [Windows & MacOS](https://www.hellotech.com/guide/for/how-to-change-dns-server-windows-mac)
-1. Dacă accesați un site cu multe reclame (ex. https://www.accuweather.com/) ar trebui să apară curat în browser.
-1. Salvați într-un fișier toate cererile pe care le blocați pe parcursul unei zile de navigat pe internet. Încercați să adunați minim 100 de nume blocate.
-1. Obțineți o statistică pentru a verifica câte din numele blocate conțin 'google', 'facebook' și care sunt cele mai frecvente companii pe care le blocați.
-
-
-<a name="arp"></a> 
-## ARP Spoofing și TCP Hijacking (4p total)
-
-
-## Structura containerelor
-Partea asta se rezolvă folosind aceeași structură de containere ca în capitolul3. Pentru a construi containerele, rulăm `docker compose up -d`.
-Imaginea este construită pe baza fișierul `docker/Dockerfile`, dacă facem modificări în fișier sau în scripturile shell, putem rula `docker-compose build --no-cache` pentru a reconstrui imaginile containerelor.
-
-
-### Observații
-1. E posibil ca tabelel ARP cache ale containerelor `router` și `server` să se updateze mai greu. Ca să nu dureze câteva ore până verificați că funcționează, puteți să le curățați în timp ce sau înainte de a declanșa atacul folosind [comenzi de aici](https://linux-audit.com/how-to-clear-the-arp-cache-on-linux/) `ip -s -s neigh flush all`
-2. Orice bucată de cod pe care o luați de pe net trebuie însoțită de comments în limba română, altfel nu vor fi punctate.
-3. Atacurile implementante aici au un scop didactic, nu încercați să folosiți aceste metode pentru a ataca alte persoane de pe o rețea locală.
-
-
-
-
-
-## ARP Spoofing (2p)
-[ARP spoofing](https://samsclass.info/124/proj11/P13xN-arpspoof.html) presupune trimiterea unui pachet ARP de tip reply către o țintă pentru a o informa greșit cu privire la adresa MAC pereche pentru un IP. [Aici](https://medium.com/@ismailakkila/black-hat-python-arp-cache-poisoning-with-scapy-7cb1d8b9d242) și [aici](https://www.youtube.com/watch?v=hI9J_tnNDCc) puteți urmări cum se execută un atac de otrăvire a tabelei cache ARP stocată pe diferite mașini.
-
-Arhitectura containerelor este definită aici, împreună cu schema prin care `middle` îi informează pe `server` și pe `router` cu privire la locația fizică (adresa MAC) unde se găsesc IP-urile celorlalți. 
-
+## Structure of the containers
+For the ARP spoofing and TCP hijacking, we used a docker-compose orchestration in which we will simulate the attacks. For each attack, it will be a different orchestration, but the structure of the containers will be the same:
 
 ```
             MIDDLE------------\
@@ -100,30 +37,10 @@ MAC: 02:42:c6:0a:00:03               |                            MAC eth0: 02:4
                                  forwarding
 ```
 
-Fiecare container execută la secțiunea command în `docker-compose.yml` un shell script prin care se configurează rutele. [Cient](https://github.com/retele-2023/proiect/blob/main/src/client.sh) și [server](https://github.com/retele-2023/proiect/blob/main/src/server.sh) setează ca default gateway pe router (anulând default gateway din docker). 
+## 🕵️‍♂️ ARP Spoofing
+Initially, each container executes a shell script that will configure the routes. Client & server set the **router as the default gateway**, canceling the default gateway set by docker. Middle sets **ip_forwarding=1** and the rule _iptables -t nat -A POSTROUTING -j MASQUERADE_ , so that the messages are able to be forwarded outside the local network.
 
-În plus, adaugă ca nameserver 8.8.8.8, dacă vreți să testați [DNS spoofing](https://networks.hypha.ro/capitolul6/#scapy_dns_spoofing). 
+The router and server need to learn each other's MAC address. Afterward, the middle container will **continuously send ARP replies** to the server & router, in order to modify their ARP table. In the middle container, the communication between the server and router can be intercepted.
 
-[Middle](https://github.com/retele-2023/proiect/blob/main/src/middle.sh) setează `ip_forwarding=1` și regula: `iptables -t nat -A POSTROUTING -j MASQUERADE` pentru a permite mesajelor care sunt [forwardate de el să iasă din rețeaua locală](https://askubuntu.com/questions/466445/what-is-masquerade-in-the-context-of-iptables). 
-
-
-Rulati procesul de otrăvire a tabelei ARP din diagrama de mai sus pentru containerele `server` și `router` în mod constant, cu un time.sleep de câteva secunde pentru a nu face flood de pachete. (Hint: puteți folosi două [thread-uri](https://realpython.com/intro-to-python-threading/#starting-a-thread) pentru otrăvirea routerului și a serverului).
-
-
-Pe lângă print-urile și mesajele de logging din programele voastre, rulați în containerul middle: `tcpdump -SntvXX -i any` iar pe `server` faceți un `wget http://old.fmi.unibuc.ro`. Dacă middle este capabil să vadă conținutul HTML din request-ul server-ului, înseamnă că atacul a reușit. Altfel încercați să curățați cache-ul ARP al serverului.
-
-<a name="tcp"></a> 
-## TCP Hijacking (2p)
-
-Modificați `tcp_server.py` și `tcp_client.py` din repository `src` și rulați-le pe containerul `server`, respectiv `client` ca să-și trimită în continuu unul altuia mesaje random (generați text sau numere, ce vreți voi). Puteți folosi time.sleep de o secundă/două să nu facă flood. Folosiți soluția de la exercițiul anterior pentru a vă interpune în conversația dintre `client` și `server`.
-După ce ați reușit atacul cu ARP spoofing și interceptați toate mesajele, modificați conținutul mesajelor trimise de către client și de către server și inserați voi un mesaj adițional în payload-ul de TCP. Dacă atacul a funcționat atât clientul cât și serverul afișează mesajul pe care l-ați inserat. Atacul acesta se numeșete [TCP hijacking](https://www.geeksforgeeks.org/session-hijacking/) pentru că atacatorul devine un [proxy](https://en.wikipedia.org/wiki/Proxy_server) pentru conexiunea TCP dintre client și server.
-
-
-### Indicații de rezolvare
-
-1. Puteți urmări exemplul din curs despre [Netfilter Queue](https://networks.hypha.ro/capitolul6/#scapy_nfqueue) pentru a pune mesajele care circulă pe rețeaua voastră într-o coadă ca să le procesați cu scapy.
-2. Urmăriți exemplul [DNS Spoofing](https://networks.hypha.ro/capitolul6/#scapy_dns_spoofing) pentru a vedea cum puteți altera mesajele care urmează a fi redirecționate într-o coadă și pentru a le modifica payload-ul înainte de a le trimite (adică să modificați payload-ul înainte de a apela `packet.accept()`).
-4. Verificați dacă pachetele trimise/primite au flag-ul PUSH setat. Are sens să alterați `SYN` sau `FIN`?
-5. Țineți cont de lungimea mesajului pe care îl introduceți pentru ajusta `Sequence Number` (sau `Acknowledgement Number`?), dacă e necesar.
-6. Încercați întâi să captați și să modificați mesajele de pe containerul router pentru a testa TCP hijacking apoi puteți combina exercițiul 1 cu metoda de hijacking.
-7. Scrieți pe teams orice întrebări aveți, indiferent de cât de simple sau complicate vi se par.
+## 🕵️‍♂️ TCP Hijacking
+On one hand, the server will be running _"tcp_server.py"_ script, on the other hand, the client will be running _"tcp_client.py"_. They will send messages to each other continuously ( time.sleep() will be used to prevent flooding). Using ARP spoofing, get the middle between the 'conversation' of server and client. After the middle container starts to intercept the messages, those messages will be modified and sent as if _the communication is taking place in normal conditions_.
