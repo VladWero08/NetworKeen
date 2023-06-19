@@ -5,7 +5,7 @@ I have worked alongside my amigo <a href="https://github.com/Iradu15">Radu</a>. 
 ## 🗺️ Traceroute 
 Traceroute will send a UDP message with increasing values of TTL until the final destination is reached. For each IP encountered, pieces of information about its geographical location will be stored inside a dictionary and eventually displayed a map of countries encountered during the transmission of the message. Depending on the location where the code was executed, some routes as been saved inside _./src/traceroute-utilities/locations.txt_.
 
-## ✋ DNS ad blocked server 
+## ✋ DNS ad blocker server 
 Using this <a href="https://github.com/anudeepND/blacklist">blacklist</a>, we have built a DNS adblocker server. Whenever one domain from the list is requested, the server will redirect the request to **'0.0.0.0 / ::**. Each blocked domain is stored in the file: _./src/dns-ad-blocker/blacklists/blocked_domains.txt_, and using that information a statistic can be generated to discover which domains were the most blocked.
 
 The server runs on a **docker-compose orchestration**, on the container with the IP = **198.8.0.3**. 
